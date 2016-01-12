@@ -20,20 +20,24 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
     });
 
     $rootScope.mostrarLogWiFi = function(data){
-        cordova.plugins.backgroundMode.configure({
-            text: data
-        });
+		if($rootScope.deviceReady){
+			cordova.plugins.backgroundMode.configure({
+				text: data
+			});
 
-        $rootScope.message = data;
+			$rootScope.message = data;
+		}
     };
 
     $state.go('inicio');
 
     document.addEventListener("backbutton", function(){
-        ws.$emit('client-disconnect', '');
+		if($rootScope.deviceReady){
+			ws.$emit('client-disconnect', '');
 
-        cordova.plugins.backgroundMode.disable();
-        navigator.app.exitApp();
+			cordova.plugins.backgroundMode.disable();
+			navigator.app.exitApp();
+		}
     }, false);
 
     document.addEventListener("deviceready", function() {
