@@ -1,8 +1,8 @@
 var myApp = angular.module('itrackq-coaster', ['ui.router', 'ngCordova', 'ngWebsocket', 'ngSanitize']);
 var networkSSID = localStorage.getItem("networkSSID") == null ? "" : localStorage.getItem("networkSSID");
 var networkPassword = localStorage.getItem("networkPassword") == null ? "" : localStorage.getItem("networkPassword");
-var iTrackQHost = localStorage.getItem("iTrackQHost") == null ? "" : localStorage.getItem("iTrackQHost");
-var iTrackQPort = localStorage.getItem("iTrackQPort") == null ? "" : localStorage.getItem("iTrackQPort");
+var iTrackQHost = localStorage.getItem("iTrackQHost") == null ? "localhost" : localStorage.getItem("iTrackQHost");
+var iTrackQPort = localStorage.getItem("iTrackQPort") == null ? "18080" : localStorage.getItem("iTrackQPort");
 var coasterID = localStorage.getItem("coasterID") == null ? "" : localStorage.getItem("coasterID");
 var sessionID = localStorage.getItem("sessionID") == null ? "" : localStorage.getItem("sessionID");
 
