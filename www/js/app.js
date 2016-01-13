@@ -11,7 +11,7 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
     $rootScope.isConnecting = false;
     $rootScope.networkConnected = false;
 
-    var ws;
+    var ws = $websocket.$new('ws://' + iTrackQHost + ':' + iTrackQPort + '/intellitrackq/clientWebSocket');
 
     $rootScope.mostrarLogWiFi = function(data){
         cordova.plugins.backgroundMode.configure({
