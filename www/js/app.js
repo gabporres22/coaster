@@ -264,8 +264,10 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
 		    });
 		
 		    ws.$on('client-connect-ok', function (message) {
-		        coasterID = message.coasterID;
-				sessionID = message.sessionID;
+		    	var jsonObj = JSON.parse(message);
+		    	
+		        coasterID = jsonObj.coasterID;
+				sessionID = jsonObj.sessionID;
 		
 		        localStorage.setItem("coasterID", coasterID);
 				localStorage.setItem("sessionID", sessionID);
