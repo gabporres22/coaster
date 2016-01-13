@@ -11,8 +11,6 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
     $rootScope.isConnecting = false;
     $rootScope.networkConnected = false;
 
-    var ws = $websocket.$new('ws://localhost:12345/intellitrackq/clientWebSocket');
-
     $rootScope.mostrarLogWiFi = function(data){
         cordova.plugins.backgroundMode.configure({
             text: data
@@ -48,38 +46,6 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
     }, false);
 
     $rootScope.mostrarLogWiFi("Iniciando aplicacion.");
-
-    // ********************************************************************************************************
-    // ***************************** Mensajes para la conexion WebSocket ***********************************
-    // ********************************************************************************************************
-
-    ws.$on('$open', function () {
-        console.log("WebSocket open");
-
-        if(coasterID != ""){
-            ws.$emit('client-reconnect-request', {sessionID: sessionID, coasterID: coasterID});
-        }else{
-            ws.$emit('client-connect-request', '');
-        }
-    });
-
-    ws.$on('client-connect-ok', function (message) {
-        coasterID = message.coasterID;
-		sessionID = message.sessionID;
-
-        localStorage.setItem("coasterID", coasterID);
-		localStorage.setItem("sessionID", sessionID);
-		
-        $state.go('modo-coaster', {barCode: coasterID});
-    });
-
-    ws.$on('client-display-message', function (data) {
-        $rootScope.$broadcast('mensaje-recibido', data);
-    });
-
-    ws.$on('$close', function () {
-        console.log("WebSocket closed");
-    });
 
     // ********************************************************************************************************
     // **************************** Helpers para la conectividad del dispositivo ******************************
@@ -276,15 +242,44 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
 
     $rootScope.$watch('networkConnected', function(){
         if($rootScope.networkConnected){
-			ws = $websocket.$new({
+			var ws = $websocket.$new({
 				url: 'ws://' + iTrackQHost + ':' + iTrackQPort + '/intellitrackq/clientWebSocket',
 				reconnect: true,
 				reconnectInterval: 5000, // it will reconnect after 0.5 seconds
-				enqueue: true,
-				lazy: true
+				enqueue: true
 			});
+			
+			// ********************************************************************************************************
+		    // ***************************** Mensajes para la conexion WebSocket ***********************************
+		    // ********************************************************************************************************
+		
+		    ws.$on('$open', function () {
+		        console.log("WebSocket open");
+		
+		        if(coasterID != ""){
+		            ws.$emit('client-reconnect-request', {sessionID: sessionID, coasterID: coasterID});
+		        }else{
+		            ws.$emit('client-connect-request', '');
+		        }
+		    });
+		
+		    ws.$on('client-connect-ok', function (message) {
+		        coasterID = message.coasterID;
+				sessionID = message.sessionID;
+		
+		        localStorage.setItem("coasterID", coasterID);
+				localStorage.setItem("sessionID", sessionID);
 				
-			ws.$open();
+		        $state.go('modo-coaster', {barCode: coasterID});
+		    });
+		
+		    ws.$on('client-display-message', function (data) {
+		        $rootScope.$broadcast('mensaje-recibido', data);
+		    });
+		
+		    ws.$on('$close', function () {
+		        console.log("WebSocket closed");
+		    });
         }
     });
 
