@@ -22,8 +22,6 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
     $state.go('inicio');
 
     document.addEventListener("backbutton", function(){
-        ws.$emit('client-disconnect', '');
-
         cordova.plugins.backgroundMode.disable();
         navigator.app.exitApp();
     }, false);
