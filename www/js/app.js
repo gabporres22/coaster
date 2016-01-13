@@ -1,15 +1,17 @@
 var myApp = angular.module('itrackq-coaster', ['ui.router', 'ngCordova', 'ngWebsocket', 'ngSanitize']);
 var networkSSID = localStorage.getItem("networkSSID") == null ? "" : localStorage.getItem("networkSSID");
 var networkPassword = localStorage.getItem("networkPassword") == null ? "" : localStorage.getItem("networkPassword");
+var iTrackQHost = localStorage.getItem("iTrackQHost") == null ? "" : localStorage.getItem("iTrackQHost");
+var iTrackQPort = localStorage.getItem("iTrackQPort") == null ? "" : localStorage.getItem("iTrackQPort");
 var coasterID = localStorage.getItem("coasterID") == null ? "" : localStorage.getItem("coasterID");
+var sessionID = localStorage.getItem("sessionID") == null ? "" : localStorage.getItem("sessionID");
 
 myApp.run(function ($rootScope, $interval, $state, $websocket) {
     $rootScope.deviceReady = false;
     $rootScope.isConnecting = false;
     $rootScope.networkConnected = false;
 
-    var wsURL = 'ws://10.0.6.128:8080/intellitrackq/clientWebSocket';
-    // wsURL = 'ws://' + (document.location.hostname == "" ? "localhost" : document.location.hostname) + ":" + (document.location.port == "" ? "8080" : document.location.port) + "/intellitrackq/clientWebSocket";
+    var wsURL = 'ws://' + iTrackQHost + ':' + iTrackQPort +'/intellitrackq/clientWebSocket';
 
     var ws = $websocket.$new({
         url: wsURL,
@@ -20,24 +22,20 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
     });
 
     $rootScope.mostrarLogWiFi = function(data){
-		if($rootScope.deviceReady){
-			cordova.plugins.backgroundMode.configure({
-				text: data
-			});
+        cordova.plugins.backgroundMode.configure({
+            text: data
+        });
 
-			$rootScope.message = data;
-		}
+        $rootScope.message = data;
     };
 
     $state.go('inicio');
 
     document.addEventListener("backbutton", function(){
-		if($rootScope.deviceReady){
-			ws.$emit('client-disconnect', '');
+        ws.$emit('client-disconnect', '');
 
-			cordova.plugins.backgroundMode.disable();
-			navigator.app.exitApp();
-		}
+        cordova.plugins.backgroundMode.disable();
+        navigator.app.exitApp();
     }, false);
 
     document.addEventListener("deviceready", function() {
@@ -67,16 +65,19 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
         console.log("WebSocket open");
 
         if(coasterID != ""){
-            ws.$emit('client-reconnect-request', coasterID);
+            ws.$emit('client-reconnect-request', {sessionID: sessionID, coasterID: coasterID});
         }else{
             ws.$emit('client-connect-request', '');
         }
     });
 
     ws.$on('client-connect-ok', function (message) {
-        coasterID = message;
+        coasterID = message.coasterID;
+		sessionID = message.sessionID;
 
         localStorage.setItem("coasterID", coasterID);
+		localStorage.setItem("sessionID", sessionID);
+		
         $state.go('modo-coaster', {barCode: coasterID});
     });
 
