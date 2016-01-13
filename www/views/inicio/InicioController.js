@@ -7,21 +7,26 @@ myApp.controller('InicioController', function($rootScope, $scope, $interval, $co
     });
 
     $scope.validarDispositivo = function() {
-        if($rootScope.deviceReady && (networkSSID == "" || networkPassword == "")){
+        if($rootScope.deviceReady && (networkSSID == "" || networkPassword == "" || iTrackQHost == "" || iTrackQPort == "")){
             if($scope.omitirScaneo)
                 return;
 
             $scope.omitirScaneo = true;
 
             $cordovaBarcodeScanner.scan().then(function(imageData) {
-                var values = imageData.text.split(";");
-
-                if(values.length >= 3){
-                    networkSSID = values[1].substring(2);
-                    networkPassword = values[2].substring(2);
+                var str = imageData.text.replace("&#34;", "'");
+				var jsonObj = JSON.parse(str);
+				
+                if(str.length > 0){
+                    networkSSID = jsonObj.SSID;
+                    networkPassword = jsonObj.SSPWD;
+					iTrackQHost = jsonObj.ITrackQHost;
+					iTrackQPort = jsonObj.ITrackQPort;
 
                     localStorage.setItem("networkSSID", networkSSID);
                     localStorage.setItem("networkPassword", networkPassword);
+					localStorage.setItem("iTrackQHost", iTrackQHost);
+					localStorage.setItem("iTrackQPort", iTrackQPort);
                 }else{
                     $scope.omitirScaneo = false;
                 }
@@ -32,7 +37,7 @@ myApp.controller('InicioController', function($rootScope, $scope, $interval, $co
         }
     };
 
-    var timerValidarDispositivo = $interval($scope.validarDispositivo, 1000);
+    var timerValidarDispositivo = $interval($scope.validarDispositivo, 2500);
 
     $scope.$on('$destroy', function() {
         if (angular.isDefined(timerValidarDispositivo)) {
