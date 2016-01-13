@@ -14,7 +14,7 @@ myApp.controller('InicioController', function($rootScope, $scope, $interval, $co
             $scope.omitirScaneo = true;
 
             $cordovaBarcodeScanner.scan().then(function(imageData) {
-                var str = imageData.text.replace(new RegExp("&#34;", 'g'), "'");
+		var str = imageData.text.replace(new RegExp("&#34;", 'g'), '"');
 		var jsonObj = JSON.parse(str);
 				
                 if(str.length > 0){
