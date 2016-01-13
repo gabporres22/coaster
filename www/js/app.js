@@ -61,6 +61,9 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
     $state.go('inicio');
 
     document.addEventListener("backbutton", function(){
+    	ws.$emit('client-disconnect');
+		ws.$close();
+        
         cordova.plugins.backgroundMode.disable();
         navigator.app.exitApp();
     }, false);
@@ -282,7 +285,6 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
 			ws.$close();
 			ws.$open();
 		}else{
-			ws.$emit('client-disconnect');
 			ws.$close();
 		}
 	});
