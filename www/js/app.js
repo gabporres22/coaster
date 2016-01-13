@@ -257,7 +257,7 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
 		        console.log("WebSocket open");
 		
 		        if(coasterID != ""){
-		            ws.$emit('client-reconnect-request', {sessionID: sessionID, coasterID: coasterID});
+		            ws.$emit('client-reconnect-request', [{sessionID: sessionID, coasterID: coasterID}]);
 		        }else{
 		            ws.$emit('client-connect-request', '');
 		        }
