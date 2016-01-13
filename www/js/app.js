@@ -11,15 +11,7 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
     $rootScope.isConnecting = false;
     $rootScope.networkConnected = false;
 
-    var wsURL = 'ws://' + iTrackQHost + ':' + iTrackQPort +'/intellitrackq/clientWebSocket';
-
-    var ws = $websocket.$new({
-        url: wsURL,
-        reconnect: true,
-        reconnectInterval: 5000, // it will reconnect after 0.5 seconds
-		enqueue: true,
-        lazy: true
-    });
+    var ws;
 
     $rootScope.mostrarLogWiFi = function(data){
         cordova.plugins.backgroundMode.configure({
@@ -284,7 +276,15 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
 
     $rootScope.$watch('networkConnected', function(){
         if($rootScope.networkConnected){
-            ws.$open();
+		ws = $websocket.$new({
+			url: 'ws://' + iTrackQHost + ':' + iTrackQPort + '/intellitrackq/clientWebSocket';,
+			reconnect: true,
+			reconnectInterval: 5000, // it will reconnect after 0.5 seconds
+			enqueue: true,
+			lazy: true
+		});
+			
+		ws.$open();
         }
     });
 
