@@ -73,7 +73,7 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
     $state.go('inicio');
 
     document.addEventListener("backbutton", function(){
-    	ws.$emit('client-disconnect');
+    	ws.$emit('client-disconnect', sessionID);
 		ws.$close();
         
         localStorage.setItem("coasterID", "");
