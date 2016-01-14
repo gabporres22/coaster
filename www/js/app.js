@@ -43,7 +43,16 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
     });
 
     ws.$on('client-display-message', function (data) {
-        $rootScope.$broadcast('mensaje-recibido', data);
+        var obj = JSON.parse(args);
+
+        console.log("DisplayMessage " + data);
+
+        if(obj.messageType == "PRESENTARSE_CAJA"){
+            if($rootScope.deviceReady)
+                navigator.vibrate(1000);
+        }
+
+        $rootScope.$broadcast('mensaje-recibido', obj);
     });
 
     ws.$on('$close', function () {
