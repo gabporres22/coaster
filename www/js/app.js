@@ -313,7 +313,7 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
 		}
 	});
 
-	$rootScope.$wacth('deviceReady', function(){
+	$rootScope.$watch('deviceReady', function(){
 		if($rootScope.deviceReady && !$rootScope.timerStarted){
 			$rootScope.timerStarted = true;
 			
