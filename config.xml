@@ -39,5 +39,6 @@
     </platform>
     <plugin name="com.phonegap.plugins.barcodescanner" spec="2.2.0" source="pgb" />
     <plugin name="de.appplant.cordova.plugin.background-mode" spec="0.6.4" source="pgb" />
+    <plugin name="org.apache.cordova.vibration" spec="0.3.13" source="pgb" />
     <plugin name="wifiwizard" source="npm" version="0.2.11" />
 </widget>
