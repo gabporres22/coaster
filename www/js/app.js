@@ -48,8 +48,9 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
         console.log("DisplayMessage " + data);
 
         if(obj.messageType == "PRESENTARSE_CAJA"){
-            if($rootScope.deviceReady)
+            if($rootScope.deviceReady){
                 navigator.vibrate(1000);
+            }
         }
 
         $rootScope.$broadcast('mensaje-recibido', obj);
@@ -60,9 +61,11 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
     });
 
     $rootScope.mostrarLogWiFi = function(data){
-        cordova.plugins.backgroundMode.configure({
-            text: data
-        });
+    	if($rootScope.deviceReady){
+    		cordova.plugins.backgroundMode.configure({
+	            text: data
+	        });
+    	}
 
         $rootScope.message = data;
     };
