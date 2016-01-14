@@ -41,4 +41,5 @@
     <plugin name="de.appplant.cordova.plugin.background-mode" spec="0.6.4" source="pgb" />
     <plugin name="org.apache.cordova.vibration" spec="0.3.13" source="pgb" />
     <plugin name="wifiwizard" source="npm" version="0.2.11" />
+    <plugin name="nl.x-services.plugins.insomnia" spec="4.0.1" source="pgb" />
 </widget>
