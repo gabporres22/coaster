@@ -3,11 +3,7 @@ myApp.controller('ModoCoasterController', function($rootScope, $scope){
     $scope.mensajeITRACKQ = {};
 
     $scope.$on('mensaje-recibido', function(event, args) {
-        var obj = JSON.parse(args);
-
-        $scope.mensajeITRACKQ = obj;
-
-        console.log($scope.mensajeITRACKQ);
+        $scope.mensajeITRACKQ = args;
     });
 
     $rootScope.$watch('message', function(){
