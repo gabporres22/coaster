@@ -43,13 +43,13 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
     });
 
     ws.$on('client-display-message', function (data) {
-        var obj = JSON.parse(args);
+        var obj = JSON.parse(data);
 
         console.log("DisplayMessage " + data);
 
         if(obj.messageType == "PRESENTARSE_CAJA"){
             if($rootScope.deviceReady){
-                navigator.vibrate(1000);
+                navigator.vibrate([500, 500, 1000]);
             }
         }
 
