@@ -10,6 +10,7 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
     $rootScope.deviceReady = false;
     $rootScope.isConnecting = false;
     $rootScope.networkConnected = false;
+    $rootScope.timerStarted = false;
 
 	var ws = $websocket.$new({
 		url: 'ws://' + iTrackQHost + ':' + iTrackQPort + '/intellitrackq/clientWebSocket',
@@ -312,8 +313,14 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
 		}
 	});
 
-    // Primer intento de conexion con la RED WiFi
-    $rootScope.getWifiStatus();
-
-    var timerGetWifiStatus = $interval($rootScope.getWifiStatus, 10000);
+	$rootScope.$wacth('deviceReady', function(){
+		if($rootScope.deviceReady && !$rootScope.timerStarted){
+			$rootScope.timerStarted = true;
+			
+			// Primer intento de conexion con la RED WiFi
+		    $rootScope.getWifiStatus();
+		
+		    var timerGetWifiStatus = $interval($rootScope.getWifiStatus, 10000);
+		}	
+	});
 });
