@@ -73,6 +73,9 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
     	ws.$emit('client-disconnect');
 		ws.$close();
         
+        localStorage.setItem("coasterID", "");
+        localStorage.setItem("sessionID", "");
+        
         cordova.plugins.backgroundMode.disable();
         navigator.app.exitApp();
     }, false);
