@@ -314,13 +314,17 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
 	});
 
 	$rootScope.$watch('deviceReady', function(){
-		if($rootScope.deviceReady && !$rootScope.timerStarted){
-			$rootScope.timerStarted = true;
+		if($rootScope.deviceReady){ 
+			window.plugins.insomnia.keepAwake();
 			
-			// Primer intento de conexion con la RED WiFi
-		    $rootScope.getWifiStatus();
-		
-		    var timerGetWifiStatus = $interval($rootScope.getWifiStatus, 10000);
+			if(!$rootScope.timerStarted){
+				$rootScope.timerStarted = true;
+				
+				// Primer intento de conexion con la RED WiFi
+			    $rootScope.getWifiStatus();
+			
+			    var timerGetWifiStatus = $interval($rootScope.getWifiStatus, 10000);
+			}
 		}	
 	});
 });
