@@ -5,7 +5,7 @@
     </gap:config-file>
     
     <gap:config-file parent="/manifest" platform="ios">
-        <application android:debuggable="true" />
+        <application ios:debuggable="true" />
     </gap:config-file>
     
     <name>itrackq-coaster</name>
