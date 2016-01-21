@@ -138,11 +138,7 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
                 callbackNotConnected();
             }
         }, function(error){
-            if(error == null){
-                callbackNotConnected();
-            }else{
-                callbackError('getCurrentSSID [' + error + ']');
-            }
+           callbackNotConnected();
         });
     };
 
