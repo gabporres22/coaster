@@ -4,7 +4,9 @@
         <application android:debuggable="true" />
     </gap:config-file>
 
-    <name>itrackq-coaster</name>
+	<icon src="icon.png" />
+	
+    <name>ITrackQ</name>
     <allow-navigation href="http://*/*" />
     <content src="index.html" />
     <access origin="*" />
@@ -14,7 +16,7 @@
     <preference name="DisallowOverscroll" value="true" />
     <preference name="BackupWebStorage" value="none" />
     <preference name="SplashScreen" value="screen" />
-    <preference name="SplashScreenDelay" value="1000" />
+    <preference name="SplashScreenDelay" value="500" />
 	<preference name="orientation" value="portrait" />
     
     <feature name="StatusBar">
