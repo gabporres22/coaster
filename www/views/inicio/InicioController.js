@@ -7,7 +7,7 @@ myApp.controller('InicioController', function($rootScope, $scope, $interval, $co
     });
 
     $scope.validarDispositivo = function() {
-        if($rootScope.deviceReady && (networkSSID == "" || networkPassword == "" || iTrackQHost == "" || iTrackQPort == "")){
+        if(networkSSID == "" || networkPassword == "" || iTrackQHost == "" || iTrackQPort == ""){
             if($scope.omitirScaneo)
                 return;
 
