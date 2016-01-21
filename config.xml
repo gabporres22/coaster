@@ -3,6 +3,10 @@
     <gap:config-file parent="/manifest" platform="android">
         <application android:debuggable="true" />
     </gap:config-file>
+    
+    <gap:config-file platform="android" parent="/manifest/application">
+		<activity android:launchMode="singleTop" />
+	</gap:config-file>
 
 	<icon src="icon.png" />
 	
