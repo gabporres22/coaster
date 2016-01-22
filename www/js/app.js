@@ -1,10 +1,23 @@
 var myApp = angular.module('itrackq-coaster', ['ui.router', 'ngCordova', 'ngWebsocket', 'ngSanitize']);
-var networkSSID = localStorage.getItem("networkSSID") == null ? "" : localStorage.getItem("networkSSID");
-var networkPassword = localStorage.getItem("networkPassword") == null ? "" : localStorage.getItem("networkPassword");
-var iTrackQHost = localStorage.getItem("iTrackQHost") == null ? "localhost" : localStorage.getItem("iTrackQHost");
-var iTrackQPort = localStorage.getItem("iTrackQPort") == null ? "18080" : localStorage.getItem("iTrackQPort");
-var coasterID = localStorage.getItem("coasterID") == null ? "" : localStorage.getItem("coasterID");
-var sessionID = localStorage.getItem("sessionID") == null ? "" : localStorage.getItem("sessionID");
+
+function obtenerValorLocalStorage(entry){
+	var value = localStorage.getItem(entry);
+	
+	if( (value === undefined) || (value == null) || (value == "undefined") ){
+		return null;
+	}else{
+		return value;
+	}
+}
+
+var networkSSID = obtenerValorLocalStorage("networkSSID") == null ? "" : obtenerValorLocalStorage("networkSSID");
+var networkPassword = obtenerValorLocalStorage("networkPassword") == null ? "" : obtenerValorLocalStorage("networkPassword");
+
+var iTrackQHost = obtenerValorLocalStorage("iTrackQHost") == null ? "localhost" : obtenerValorLocalStorage("iTrackQHost");
+var iTrackQPort = obtenerValorLocalStorage("iTrackQPort") == null ? "12345" : obtenerValorLocalStorage("iTrackQPort");
+
+var coasterID = obtenerValorLocalStorage("coasterID") == null ? "" : obtenerValorLocalStorage("coasterID");
+var sessionID = obtenerValorLocalStorage("sessionID") == null ? "" : obtenerValorLocalStorage("sessionID");
 
 myApp.run(function ($rootScope, $interval, $state, $websocket) {
 
@@ -36,7 +49,7 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
         var ws = $websocket.$new({
             url: 'ws://' + iTrackQHost + ':' + iTrackQPort + '/intellitrackq/clientWebSocket',
             reconnect: true,
-            reconnectInterval: 5000, // it will reconnect after 0.5 seconds
+            reconnectInterval: 2500, // it will reconnect after 0.5 seconds
             enqueue: true
         });
 
