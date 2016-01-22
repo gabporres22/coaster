@@ -282,7 +282,7 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
             });
         };
 
-		$rootScope.$watch('webSocketDataUpdated', function(){
+		$rootScope.$on('webSocketDataUpdated', function(){
             ws.$close();
 
             ws = $websocket.$new({
