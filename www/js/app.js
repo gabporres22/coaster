@@ -299,13 +299,17 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
         });
 
         document.addEventListener("backbutton", function(){
-			$rootScope.$broadcast('ws-discconnect');
+        	navigator.notification.confirm("Confirma salir de la aplicación y cancelar su turno ?", function(buttonIndex){
+        		if(buttonIndex == 1){
+        			$rootScope.$broadcast('ws-discconnect');
 
-            localStorage.setItem("coasterID", "");
-            localStorage.setItem("sessionID", "");
-
-            cordova.plugins.backgroundMode.disable();
-            navigator.app.exitApp();
+		            localStorage.setItem("coasterID", "");
+		            localStorage.setItem("sessionID", "");
+		
+		            cordova.plugins.backgroundMode.disable();
+		            navigator.app.exitApp();
+        		}
+        	}, "Cerrar aplicación", ['Aceptar', 'Cancelar'])
         }, false);
 
         $state.go('inicio');
