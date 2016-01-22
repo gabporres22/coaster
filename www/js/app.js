@@ -44,54 +44,7 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
             });
 
             $rootScope.message = data;
-        };
-
-        var ws = $websocket.$new({
-            url: 'ws://' + iTrackQHost + ':' + iTrackQPort + '/intellitrackq/clientWebSocket',
-            reconnect: true,
-            reconnectInterval: 2500, // it will reconnect after 0.5 seconds
-            enqueue: true
-        });
-
-        // ********************************************************************************************************
-        // ***************************** Mensajes para la conexion WebSocket **************************************
-        // ********************************************************************************************************
-
-        ws.$on('$open', function () {
-            console.log("WebSocket open");
-
-            if(coasterID != ""){
-                ws.$emit('client-reconnect-request', {sessionID: sessionID, coasterID: coasterID});
-            }else{
-                ws.$emit('client-connect-request', '');
-            }
-        });
-
-        ws.$on('client-connect-ok', function (message) {
-            coasterID = message.coasterID;
-            sessionID = message.sessionID;
-
-            localStorage.setItem("coasterID", coasterID);
-            localStorage.setItem("sessionID", sessionID);
-
-            $state.go('modo-coaster', {barCode: coasterID});
-        });
-
-        ws.$on('client-display-message', function (data) {
-            var obj = JSON.parse(data);
-
-            console.log("DisplayMessage " + data);
-
-            if(obj.messageType == "PRESENTARSE_CAJA"){
-                navigator.vibrate([500, 500, 1000]);
-            }
-
-            $rootScope.$broadcast('mensaje-recibido', obj);
-        });
-
-        ws.$on('$close', function () {
-            console.log("WebSocket closed");
-        });
+        };   
 
         // ********************************************************************************************************
         // **************************** Helpers para la conectividad del dispositivo ******************************
@@ -283,9 +236,7 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
         };
 
 		$rootScope.$on('webSocketDataUpdated', function(){
-            ws.$close();
-
-            ws = $websocket.$new({
+            var ws = $websocket.$new({
                 url: 'ws://' + iTrackQHost + ':' + iTrackQPort + '/intellitrackq/clientWebSocket',
                 reconnect: true,
                 reconnectInterval: 1000,
@@ -293,20 +244,62 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
                 lazy: true
             });
 
-            ws.$open();
+			// ********************************************************************************************************
+			// ***************************** Mensajes para la conexion WebSocket **************************************
+			// ********************************************************************************************************
+
+			ws.$on('$open', function () {
+				console.log("WebSocket open");
+
+				if(coasterID != ""){
+					ws.$emit('client-reconnect-request', {sessionID: sessionID, coasterID: coasterID});
+				}else{
+					ws.$emit('client-connect-request', '');
+				}
+			});
+
+			ws.$on('client-connect-ok', function (message) {
+				coasterID = message.coasterID;
+				sessionID = message.sessionID;
+
+				localStorage.setItem("coasterID", coasterID);
+				localStorage.setItem("sessionID", sessionID);
+
+				$state.go('modo-coaster', {barCode: coasterID});
+			});
+
+			ws.$on('client-display-message', function (data) {
+				var obj = JSON.parse(data);
+
+				console.log("DisplayMessage " + data);
+
+				if(obj.messageType == "PRESENTARSE_CAJA"){
+					navigator.vibrate([500, 500, 1000]);
+				}
+
+				$rootScope.$broadcast('mensaje-recibido', obj);
+			});
+
+			ws.$on('$close', function () {
+				console.log("WebSocket closed");
+			});
+			
+			$rootScope.$on('ws-discconnect', function(){
+				ws.$emit('client-disconnect', sessionID);
+				ws.$close();
+			});
+			
+			ws.$open();
         });
 		
         $rootScope.$watch('networkConnected', function(){
             if($rootScope.networkConnected){
                 $rootScope.$broadcast('webSocketDataUpdated');
-            }else{
-                ws.$close();
             }
         });
 
         document.addEventListener("backbutton", function(){
-            ws.$emit('client-disconnect', sessionID);
-            ws.$close();
+			$rootScope.$broadcast('ws-discconnect');
 
             localStorage.setItem("coasterID", "");
             localStorage.setItem("sessionID", "");
