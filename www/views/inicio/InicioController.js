@@ -7,7 +7,7 @@ myApp.controller('InicioController', function($rootScope, $scope, $interval, $co
     });
 
     $scope.validarDispositivo = function() {
-        if(networkSSID == "" || networkPassword == "" || iTrackQHost == "" || iTrackQPort == ""){
+        if($rootScope.deviceReady && (networkSSID == "" || networkPassword == "" || iTrackQHost == "" || iTrackQPort == "")){
             if($scope.omitirScaneo)
                 return;
 
@@ -27,6 +27,8 @@ myApp.controller('InicioController', function($rootScope, $scope, $interval, $co
                     localStorage.setItem("networkPassword", networkPassword);
 					localStorage.setItem("iTrackQHost", iTrackQHost);
 					localStorage.setItem("iTrackQPort", iTrackQPort);
+					
+					$rootScope.$broadcast('webSocketDataUpdated');
                 }else{
                     $scope.omitirScaneo = false;
                 }
