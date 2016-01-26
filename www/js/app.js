@@ -38,10 +38,16 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
         $rootScope.isConnecting = false;
         $rootScope.networkConnected = false;
 
-        $rootScope.mostrarLogWiFi = function(data){
+        $rootScope.mostrarMensajeBarra = function(data){
             cordova.plugins.backgroundMode.configure({
                 text: data
             });
+
+            navigator.vibrate([500, 500, 1000]);
+        };
+
+        $rootScope.mostrarLogWiFi = function(data){
+            console.log(data);
 
             $rootScope.message = data;
         };   
@@ -271,13 +277,27 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
 			ws.$on('client-display-message', function (data) {
 				var obj = JSON.parse(data);
 
-				console.log("DisplayMessage " + data);
+				console.log("DisplayMessage [" + data + "]");
 
 				if(obj.messageType == "PRESENTARSE_CAJA"){
-					navigator.vibrate([500, 500, 1000]);
+                    $rootScope.mostrarMensajeBarra("DIRIJASE A " + obj.label + " " + obj.numeroCaja);
 				}
 
 				$rootScope.$broadcast('mensaje-recibido', obj);
+
+                if(obj.messageType == "INICIO"){
+                    $rootScope.mostrarMensajeBarra("Gracias por su compra !. " + obj.sucursal.nombre);
+
+                    $timeout(function(){
+                        $rootScope.$broadcast('ws-discconnect');
+
+                        localStorage.setItem("coasterID", "");
+                        localStorage.setItem("sessionID", "");
+
+                        cordova.plugins.backgroundMode.disable();
+                        navigator.app.exitApp();
+                    }, 3000);
+                }
 			});
 
 			ws.$on('$close', function () {

@@ -15,6 +15,12 @@
                 </div>
             </div>
 
+            <div ng-switch-when="INICIO">
+                <span class="message">Gracias por su compra !</span>
+                <br>
+                <span class="message">{{mensajeITRACKQ.sucursal.nombre}}</span>
+            </div>
+
             <div ng-switch-when="CADUCIDAD">
                 <span class="message">{{mensajeITRACKQ.label}}</span>
             </div>
