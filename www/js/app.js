@@ -19,7 +19,7 @@ var iTrackQPort = obtenerValorLocalStorage("iTrackQPort") == null ? "12345" : ob
 var coasterID = obtenerValorLocalStorage("coasterID") == null ? "" : obtenerValorLocalStorage("coasterID");
 var sessionID = obtenerValorLocalStorage("sessionID") == null ? "" : obtenerValorLocalStorage("sessionID");
 
-myApp.run(function ($rootScope, $interval, $state, $websocket) {
+myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 
     document.addEventListener("deviceready", function() {
         if (window.cordova && window.cordova.plugins.Keyboard)
