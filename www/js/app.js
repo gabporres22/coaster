@@ -286,7 +286,7 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
 				$rootScope.$broadcast('mensaje-recibido', obj);
 
                 if(obj.messageType == "INICIO"){
-                    $rootScope.mostrarMensajeBarra("Gracias por su compra !. " + obj.sucursal.nombre);
+                    $rootScope.mostrarMensajeBarra("Gracias por su compra !");
 
                     $timeout(function(){
                         $rootScope.$broadcast('ws-discconnect');
