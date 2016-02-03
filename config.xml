@@ -27,8 +27,14 @@
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
     
-	<platform name="ios" />
-	<platform name="android" />
+	<platform name="ios">
+		<preference name="deployment-target" value="8.4" />
+	</platform>
+	
+	<platform name="android">
+		<preference name="android-minSdkVersion" value="19" />
+	</platform>
+	
 	<platform name="winphone" />
     
     <plugin name="com.phonegap.plugins.barcodescanner" spec="2.2.0" source="pgb" />
