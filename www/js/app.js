@@ -19,6 +19,8 @@ var iTrackQPort = obtenerValorLocalStorage("iTrackQPort") == null ? "12345" : ob
 var coasterID = obtenerValorLocalStorage("coasterID") == null ? "" : obtenerValorLocalStorage("coasterID");
 var sessionID = obtenerValorLocalStorage("sessionID") == null ? "" : obtenerValorLocalStorage("sessionID");
 
+var connectionRequestWait = false;
+
 myApp.run(function ($rootScope, $interval, $state, $websocket) {
 
     document.addEventListener("deviceready", function() {
@@ -257,12 +259,16 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
 			ws.$on('$open', function () {
 				console.log("WebSocket open");
 
-				if(coasterID != ""){
-					ws.$emit('client-reconnect-request', {sessionID: sessionID, coasterID: coasterID});
-				}else{
-					ws.$emit('client-connect-request', '');
-				}
-			});
+                if(!connectionRequestWait){
+                    if(coasterID != ""){
+                        ws.$emit('client-reconnect-request', {sessionID: sessionID, coasterID: coasterID});
+                    }else{
+                        ws.$emit('client-connect-request', '');
+                    }
+
+                    connectionRequestWait = true;
+                }
+            });
 
 			ws.$on('client-connect-ok', function (message) {
 				coasterID = message.coasterID;
@@ -270,6 +276,8 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
 
 				localStorage.setItem("coasterID", coasterID);
 				localStorage.setItem("sessionID", sessionID);
+
+                connectionRequestWait = false;
 
 				$state.go('modo-coaster', {barCode: coasterID});
 			});
@@ -296,7 +304,7 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
 
                         cordova.plugins.backgroundMode.disable();
                         navigator.app.exitApp();
-                    }, 3000);
+                    }, 5000);
                 }
 			});
 
@@ -307,6 +315,8 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
 			$rootScope.$on('ws-discconnect', function(){
 				ws.$emit('client-disconnect', sessionID);
 				ws.$close();
+
+                connectionRequestWait = false;
 			});
 			
 			ws.$open();
