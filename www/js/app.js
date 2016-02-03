@@ -21,8 +21,7 @@ var sessionID = obtenerValorLocalStorage("sessionID") == null ? "" : obtenerValo
 
 var connectionRequestWait = false;
 
-myApp.run(function ($rootScope, $interval, $state, $websocket) {
-
+myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
     document.addEventListener("deviceready", function() {
         if (window.cordova && window.cordova.plugins.Keyboard)
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
@@ -34,7 +33,7 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
 
         cordova.plugins.backgroundMode.setDefaults({
             title: 'ITrackQ',
-            text : 'Ejecutando aplicacion en modo background.'
+            text : 'Hasar Sistemas'
         });
 
         $rootScope.isConnecting = false;
@@ -45,7 +44,10 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
                 text: data
             });
 
-            navigator.vibrate([500, 500, 1000]);
+			$timeout(function(){
+				navigator.vibrate([500, 500, 1000]);	
+			}, 1000);
+            
         };
 
         $rootScope.mostrarLogWiFi = function(data){
@@ -287,14 +289,14 @@ myApp.run(function ($rootScope, $interval, $state, $websocket) {
 
 				console.log("DisplayMessage [" + data + "]");
 
+				$rootScope.$broadcast('mensaje-recibido', obj);
+
 				if(obj.messageType == "PRESENTARSE_CAJA"){
                     $rootScope.mostrarMensajeBarra("DIRIJASE A " + obj.label + " " + obj.numeroCaja);
 				}
 
-				$rootScope.$broadcast('mensaje-recibido', obj);
-
                 if(obj.messageType == "INICIO"){
-                    $rootScope.mostrarMensajeBarra("Gracias por su compra !. " + obj.sucursal.nombre);
+                    $rootScope.mostrarMensajeBarra("Gracias por su compra !");
 
                     $timeout(function(){
                         $rootScope.$broadcast('ws-discconnect');
