@@ -249,7 +249,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
             var ws = $websocket.$new({
                 url: 'ws://' + iTrackQHost + ':' + iTrackQPort + '/intellitrackq/clientWebSocket',
                 reconnect: true,
-                reconnectInterval: 1000,
+                reconnectInterval: 5000,
                 enqueue: true,
                 lazy: true
             });
