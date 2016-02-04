@@ -7,7 +7,7 @@ myApp.controller('InicioController', function($rootScope, $scope, $interval, $co
         $scope.mensaje = $rootScope.message;
     });
 	
-	$scope.$on('mensaje-recibido', function(event, args) {
+	$rootScope.$on('mensaje-recibido', function(event, args) {
         $scope.mensajeITRACKQ = args;
     });
 
