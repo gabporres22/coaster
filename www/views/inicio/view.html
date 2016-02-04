@@ -21,9 +21,23 @@
 
 <div class="col-md-12 col-lg-12 col-xs-12 block no-padding" style="height: 35%;">
     <div class="centered" style="width: 80%;">
-        <span class="font-plain" style="color: #ffffff; line-height: 150%; font-size: 3.5vh;">
-            Aguarde un momento por favor, estamos iniciando la conexión con el sistema de filas virtuales.
-        </span>
+		<div ng-switch="mensajeITRACKQ.messageType" style="color: #ffffff;">
+				<div ng-switch-default="">
+					<div class="col-md-12 col-lg-12 col-xs-12" style="font-size: 4vh;">
+						<span>
+							Aguarde un momento por favor, estamos iniciando la conexión con el sistema de filas virtuales.
+						</span>
+					</div>
+				</div>
+
+				<div ng-switch-when="DISCONNECT">
+					<span class="message">{{mensajeITRACKQ.data}}</span>
+				</div>
+
+				<div ng-switch-when="CONNECTION-ERROR">
+					<span class="message">{{mensajeITRACKQ.data}}</span>
+				</div>
+		</div>
     </div>
 </div>
 

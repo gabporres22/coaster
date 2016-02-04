@@ -271,6 +271,11 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
                 }
             });
 
+			ws.$on('error-connection-request', function(message){
+				$state.go('inicio');
+				$rootScope.$broadcast('mensaje-recibido', {messageType: 'CONNECTION-ERROR', data: message});
+			});
+			
 			ws.$on('client-connect-ok', function (message) {
 				coasterID = message.coasterID;
 				sessionID = message.sessionID;
@@ -311,6 +316,9 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 
 			ws.$on('$close', function () {
 				console.log("WebSocket closed");
+				
+				$state.go('inicio');
+				$rootScope.$broadcast('mensaje-recibido', {messageType: 'DISCONNECT', data: 'Se ha perdido la conectividad con el servidor. Aguarde un momento por favor.'});
 			});
 			
 			$rootScope.$on('ws-discconnect', function(){

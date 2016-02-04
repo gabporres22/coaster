@@ -1,9 +1,14 @@
 myApp.controller('InicioController', function($rootScope, $scope, $interval, $cordovaBarcodeScanner){
     $scope.omitirScaneo = false;
     $scope.mensaje = "";
-
+	$scope.mensajeITRACKQ = {};
+	
     $rootScope.$watch('message', function(){
         $scope.mensaje = $rootScope.message;
+    });
+	
+	$scope.$on('mensaje-recibido', function(event, args) {
+        $scope.mensajeITRACKQ = args;
     });
 
     $scope.validarDispositivo = function() {
