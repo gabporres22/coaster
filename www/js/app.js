@@ -20,6 +20,7 @@ var coasterID = obtenerValorLocalStorage("coasterID") == null ? "" : obtenerValo
 var sessionID = obtenerValorLocalStorage("sessionID") == null ? "" : obtenerValorLocalStorage("sessionID");
 
 var connectionRequestWait = false;
+var webSocketConnected = false;
 
 myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
     document.addEventListener("deviceready", function() {
@@ -259,8 +260,9 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 
 			ws.$on('$open', function () {
 				console.log("WebSocket open");
-
-                if(!connectionRequestWait){
+				webSocketConnected = true;
+                
+				if(!connectionRequestWait){
                     if(coasterID != ""){
                         ws.$emit('client-reconnect-request', {sessionID: sessionID, coasterID: coasterID});
                     }else{
@@ -317,8 +319,12 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 			ws.$on('$close', function () {
 				console.log("WebSocket closed");
 				
-				$state.go('inicio');
-				$rootScope.$broadcast('mensaje-recibido', {messageType: 'DISCONNECT', data: 'Se ha perdido la conectividad con el servidor. Aguarde un momento por favor.'});
+				if(webSocketConnected){
+					$state.go('inicio');
+					$rootScope.$broadcast('mensaje-recibido', {messageType: 'DISCONNECT', data: 'Se ha perdido la conectividad con el servidor. Aguarde un momento por favor.'});
+					
+					webSocketConnected = false;
+				}
 			});
 			
 			$rootScope.$on('ws-discconnect', function(){
