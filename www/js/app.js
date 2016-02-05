@@ -276,6 +276,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 			ws.$on('error-connection-request', function(message){
 				$state.go('inicio');
 				$rootScope.$broadcast('mensaje-recibido', {messageType: 'CONNECTION-ERROR', data: message});
+				$rootScope.$broadcast('webSocketDataUpdated');
 			});
 			
 			ws.$on('client-connect-ok', function (message) {
@@ -305,8 +306,8 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
                     $rootScope.mostrarMensajeBarra("Gracias por su compra !");
 
                     $timeout(function(){
-                        $rootScope.$broadcast('ws-discconnect');
-
+						ws.$close();
+						
                         localStorage.setItem("coasterID", "");
                         localStorage.setItem("sessionID", "");
 
