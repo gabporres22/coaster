@@ -306,6 +306,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
                     $rootScope.mostrarMensajeBarra("Gracias por su compra !");
 
                     $timeout(function(){
+						ws.$emit('client-remove-request', sessionID);
 						ws.$close();
 						
                         localStorage.setItem("coasterID", "");
