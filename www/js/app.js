@@ -46,8 +46,9 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
             });
 
 			$timeout(function(){
-				navigator.vibrate([500, 500, 1000]);	
-			}, 1000);
+				navigator.notification.vibrate([500, 500, 1000]);
+                navigator.notification.beep(3);
+			}, 2000);
             
         };
 
@@ -271,6 +272,13 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 
                     connectionRequestWait = true;
                 }
+            });
+
+            ws.$on('non-free-coasters-available', function(message){
+                $timeout(function(){
+                    $rootScope.mostrarLogWiFi("Sin coasters disponibles, aguarde un momento.");
+                    $rootScope.$broadcast('webSocketDataUpdated');
+                }, 5000);
             });
 
 			ws.$on('error-connection-request', function(message){
