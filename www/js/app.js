@@ -53,8 +53,6 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
         };
 
         $rootScope.mostrarLogWiFi = function(data){
-            console.log(data);
-
             $rootScope.message = data;
         };   
 
@@ -279,6 +277,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 
                 $rootScope.$broadcast('mensaje-recibido', {messageType: 'CONNECTION-ERROR', data: 'Sin coasters disponibles, aguarde un momento.'});
 
+                webSocketConnected = false;
                 ws.$close();
 
                 $timeout(function(){
@@ -291,6 +290,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 
 				$rootScope.$broadcast('mensaje-recibido', {messageType: 'CONNECTION-ERROR', data: message});
 
+                webSocketConnected = false;
                 ws.$close();
 
                 $timeout(function(){
