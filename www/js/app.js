@@ -279,7 +279,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
             ws.$on('non-free-coasters-available', function(message){
                 $state.go('inicio');
 
-                $rootScope.$broadcast('mensaje-recibido', {messageType: 'CONNECTION-ERROR', data: 'Sin coasters disponibles, aguarde un momento.'});
+                $rootScope.$broadcast('mensaje-recibido', {messageType: 'CONNECTION-ERROR', data: 'Procesando su solicitud, aguarde un momento.'});
 
                 connectionRequestWait = false;
 
@@ -343,6 +343,8 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
                 if(autoReconnect){
                     $state.go('inicio');
                     $rootScope.$broadcast('mensaje-recibido', {messageType: 'DISCONNECT', data: 'Se ha perdido la conectividad con el servidor. Aguarde un momento por favor.'});
+
+                    ws.$open();
                 }
 
                 webSocketConnected = false;
@@ -358,12 +360,6 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 
                 ws.$close();
 			});
-
-            $interval(function(){
-                if(!webSocketConnected && autoReconnect)
-                    ws.$open();
-            }, 5000);
-
         });
 		
         $rootScope.$watch('networkConnected', function(){
