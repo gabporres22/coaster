@@ -259,55 +259,57 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 			// ********************************************************************************************************
 
             function connectToServer(){
-                if(!connectionRequestWait){
-                    if(coasterID != ""){
-                        ws.$emit('client-reconnect-request', {sessionID: sessionID, coasterID: coasterID});
-                    }else{
-                        ws.$emit('client-connect-request', '');
-                    }
-
-                    connectionRequestWait = true;
+                if(coasterID != ""){
+                    ws.$emit('client-reconnect-request', {sessionID: sessionID, coasterID: coasterID});
+                }else{
+                    ws.$emit('client-connect-request', '');
                 }
+
+                connectionRequestWait = true;
             };
 
 			ws.$on('$open', function () {
 				webSocketConnected = true;
-                
-				connectToServer();
+
+                $interval(function(){
+                    if(!connectionRequestWait && autoReconnect){
+                        console.log("Intentado conectarse al servidor");
+
+                        connectToServer();
+                    }
+                }, 5000);
+
             });
 
             ws.$on('non-free-coasters-available', function(message){
+                connectionRequestWait = false;
+
+                console.log("Error en la conexion [Sin coasters dispnibles]");
+
                 $state.go('inicio');
 
                 $rootScope.$broadcast('mensaje-recibido', {messageType: 'CONNECTION-ERROR', data: 'Procesando su solicitud, aguarde un momento.'});
-
-                connectionRequestWait = false;
-
-                $timeout(function(){
-                    connectToServer();
-                }, 5000);
             });
 
 			ws.$on('error-connection-request', function(message){
+                connectionRequestWait = false;
+
+                console.log("Error en la conexion [" + message + "]");
+
 				$state.go('inicio');
 
 				$rootScope.$broadcast('mensaje-recibido', {messageType: 'CONNECTION-ERROR', data: message});
-
-                connectionRequestWait = false;
-
-                $timeout(function(){
-                    connectToServer();
-                }, 5000);
 			});
 			
 			ws.$on('client-connect-ok', function (message) {
+                connectionRequestWait = false;
+                console.log("Conectado con exito");
+
 				coasterID = message.coasterID;
 				sessionID = message.sessionID;
 
 				localStorage.setItem("coasterID", coasterID);
 				localStorage.setItem("sessionID", sessionID);
-
-                connectionRequestWait = false;
 
 				$state.go('modo-coaster', {barCode: coasterID});
 			});
@@ -340,26 +342,30 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 			});
 
 			ws.$on('$close', function () {
+                webSocketConnected = false;
+                connectionRequestWait = false;
+
+                console.log("WebSocket desconectado");
+
                 if(autoReconnect){
                     $state.go('inicio');
                     $rootScope.$broadcast('mensaje-recibido', {messageType: 'DISCONNECT', data: 'Se ha perdido la conectividad con el servidor. Aguarde un momento por favor.'});
 
                     ws.$open();
                 }
-
-                webSocketConnected = false;
-                connectionRequestWait = false;
 			});
 			
 			$rootScope.$on('ws-discconnect', function(){
 				ws.$emit('client-disconnect', sessionID);
 
-                connectionRequestWait = false;
-                webSocketConnected = false;
                 autoReconnect = false;
+                webSocketConnected = false;
+                connectionRequestWait = false;
 
                 ws.$close();
 			});
+
+            ws.$open();
         });
 		
         $rootScope.$watch('networkConnected', function(){
