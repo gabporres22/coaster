@@ -251,7 +251,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
             var ws = $websocket.$new({
                 url: 'ws://' + iTrackQHost + ':' + iTrackQPort + '/intellitrackq/clientWebSocket',
                 reconnect: true,
-                reconnectInterval: 5000,
+                reconnectInterval: 1000,
                 lazy: true
             });
 
@@ -276,15 +276,20 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 
             ws.$on('non-free-coasters-available', function(message){
                 $timeout(function(){
-                    $rootScope.mostrarLogWiFi("Sin coasters disponibles, aguarde un momento.");
+                    $state.go('inicio');
+
+                    $rootScope.$broadcast('mensaje-recibido', {messageType: 'CONNECTION-ERROR', data: 'Sin coasters disponibles, aguarde un momento.'});
+
                     $rootScope.$broadcast('webSocketDataUpdated');
                 }, 5000);
             });
 
 			ws.$on('error-connection-request', function(message){
 				$state.go('inicio');
+
 				$rootScope.$broadcast('mensaje-recibido', {messageType: 'CONNECTION-ERROR', data: message});
-				$rootScope.$broadcast('webSocketDataUpdated');
+
+                $rootScope.$broadcast('webSocketDataUpdated');
 			});
 			
 			ws.$on('client-connect-ok', function (message) {
@@ -327,8 +332,6 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 			});
 
 			ws.$on('$close', function () {
-				console.log("WebSocket closed");
-				
 				if(webSocketConnected){
 					$state.go('inicio');
 					$rootScope.$broadcast('mensaje-recibido', {messageType: 'DISCONNECT', data: 'Se ha perdido la conectividad con el servidor. Aguarde un momento por favor.'});
