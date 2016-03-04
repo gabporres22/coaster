@@ -247,7 +247,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 		$rootScope.$on('webSocketDataUpdated', function(){
             var autoReconnect = true;
             var clientConnected = false;
-            var connectionRequestWait = false;
+            var connectionRequestSended = false;
 
             var ws = $websocket.$new({
                 url: 'ws://' + iTrackQHost + ':' + iTrackQPort + '/intellitrackq/clientWebSocket',
@@ -266,14 +266,14 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
                     ws.$emit('client-connect-request', '');
                 }
 
-                connectionRequestWait = true;
+                connectionRequestSended = true;
             };
 
 			ws.$on('$open', function () {
 				webSocketConnected = true;
 
                 $interval(function(){
-                    if(!clientConnected && !connectionRequestWait && autoReconnect){
+                    if(!clientConnected && autoReconnect && !connectionRequestSended){
                         console.log("Intentado conectarse al servidor");
 
                         connectToServer();
@@ -283,7 +283,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
             });
 
             ws.$on('non-free-coasters-available', function(message){
-                connectionRequestWait = false;
+                connectionRequestSended = false;
 
                 console.log("Error en la conexion [Sin coasters dispnibles]");
 
@@ -293,7 +293,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
             });
 
 			ws.$on('error-connection-request', function(message){
-                connectionRequestWait = false;
+                connectionRequestSended = false;
 
                 console.log("Error en la conexion [" + message + "]");
 
@@ -303,9 +303,8 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 			});
 			
 			ws.$on('client-connect-ok', function (message) {
-                connectionRequestWait = false;
                 clientConnected = true;
-                
+
                 console.log("Conectado con exito");
 
 				coasterID = message.coasterID;
@@ -346,7 +345,8 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 
 			ws.$on('$close', function () {
                 webSocketConnected = false;
-                connectionRequestWait = false;
+                clientConnected = false;
+                connectionRequestSended = false;
 
                 console.log("WebSocket desconectado");
 
