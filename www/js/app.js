@@ -275,11 +275,13 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
             });
 
             ws.$on('non-free-coasters-available', function(message){
+                $state.go('inicio');
+
+                $rootScope.$broadcast('mensaje-recibido', {messageType: 'CONNECTION-ERROR', data: 'Sin coasters disponibles, aguarde un momento.'});
+
+                ws.$close();
+
                 $timeout(function(){
-                    $state.go('inicio');
-
-                    $rootScope.$broadcast('mensaje-recibido', {messageType: 'CONNECTION-ERROR', data: 'Sin coasters disponibles, aguarde un momento.'});
-
                     $rootScope.$broadcast('webSocketDataUpdated');
                 }, 5000);
             });
@@ -289,7 +291,11 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 
 				$rootScope.$broadcast('mensaje-recibido', {messageType: 'CONNECTION-ERROR', data: message});
 
-                $rootScope.$broadcast('webSocketDataUpdated');
+                ws.$close();
+
+                $timeout(function(){
+                    $rootScope.$broadcast('webSocketDataUpdated');
+                }, 5000);
 			});
 			
 			ws.$on('client-connect-ok', function (message) {
@@ -367,7 +373,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 		            cordova.plugins.backgroundMode.disable();
 		            navigator.app.exitApp();
         		}
-        	}, "Cerrar aplicación", ['Aceptar', 'Cancelar'])
+        	}, "Cerrar aplicación", ['Aceptar', 'Cancelar']);
         }, false);
 
         $state.go('inicio');
