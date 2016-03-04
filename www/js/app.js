@@ -19,7 +19,6 @@ var iTrackQPort = obtenerValorLocalStorage("iTrackQPort") == null ? "12345" : ob
 var coasterID = obtenerValorLocalStorage("coasterID") == null ? "" : obtenerValorLocalStorage("coasterID");
 var sessionID = obtenerValorLocalStorage("sessionID") == null ? "" : obtenerValorLocalStorage("sessionID");
 
-var connectionRequestWait = false;
 var webSocketConnected = false;
 
 myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
@@ -247,6 +246,8 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 
 		$rootScope.$on('webSocketDataUpdated', function(){
             var autoReconnect = true;
+            var clientConnected = false;
+            var connectionRequestWait = false;
 
             var ws = $websocket.$new({
                 url: 'ws://' + iTrackQHost + ':' + iTrackQPort + '/intellitrackq/clientWebSocket',
@@ -272,7 +273,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 				webSocketConnected = true;
 
                 $interval(function(){
-                    if(!connectionRequestWait && autoReconnect){
+                    if(!clientConnected && !connectionRequestWait && autoReconnect){
                         console.log("Intentado conectarse al servidor");
 
                         connectToServer();
@@ -303,6 +304,8 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 			
 			ws.$on('client-connect-ok', function (message) {
                 connectionRequestWait = false;
+                clientConnected = true;
+                
                 console.log("Conectado con exito");
 
 				coasterID = message.coasterID;
