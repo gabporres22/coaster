@@ -246,10 +246,11 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
         };
 
 		$rootScope.$on('webSocketDataUpdated', function(){
+            var autoReconnect = true;
+
             var ws = $websocket.$new({
                 url: 'ws://' + iTrackQHost + ':' + iTrackQPort + '/intellitrackq/clientWebSocket',
-                reconnect: true,
-                reconnectInterval: 1000,
+                reconnect: false,
                 lazy: true
             });
 
@@ -257,11 +258,8 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 			// ***************************** Mensajes para la conexion WebSocket **************************************
 			// ********************************************************************************************************
 
-			ws.$on('$open', function () {
-				console.log("WebSocket open");
-				webSocketConnected = true;
-                
-				if(!connectionRequestWait){
+            function connectToServer(){
+                if(!connectionRequestWait){
                     if(coasterID != ""){
                         ws.$emit('client-reconnect-request', {sessionID: sessionID, coasterID: coasterID});
                     }else{
@@ -270,6 +268,12 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 
                     connectionRequestWait = true;
                 }
+            };
+
+			ws.$on('$open', function () {
+				webSocketConnected = true;
+                
+				connectToServer();
             });
 
             ws.$on('non-free-coasters-available', function(message){
@@ -277,13 +281,10 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 
                 $rootScope.$broadcast('mensaje-recibido', {messageType: 'CONNECTION-ERROR', data: 'Sin coasters disponibles, aguarde un momento.'});
 
-                webSocketConnected = false;
                 connectionRequestWait = false;
 
-                ws.$close();
-
                 $timeout(function(){
-                    $rootScope.$broadcast('webSocketDataUpdated');
+                    connectToServer();
                 }, 5000);
             });
 
@@ -292,13 +293,10 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 
 				$rootScope.$broadcast('mensaje-recibido', {messageType: 'CONNECTION-ERROR', data: message});
 
-                webSocketConnected = false;
-
                 connectionRequestWait = false;
-                ws.$close();
 
                 $timeout(function(){
-                    $rootScope.$broadcast('webSocketDataUpdated');
+                    connectToServer();
                 }, 5000);
 			});
 			
@@ -342,22 +340,30 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 			});
 
 			ws.$on('$close', function () {
-				if(webSocketConnected){
-					$state.go('inicio');
-					$rootScope.$broadcast('mensaje-recibido', {messageType: 'DISCONNECT', data: 'Se ha perdido la conectividad con el servidor. Aguarde un momento por favor.'});
-					
-					webSocketConnected = false;
-				}
+                if(autoReconnect){
+                    $state.go('inicio');
+                    $rootScope.$broadcast('mensaje-recibido', {messageType: 'DISCONNECT', data: 'Se ha perdido la conectividad con el servidor. Aguarde un momento por favor.'});
+                }
+
+                webSocketConnected = false;
+                connectionRequestWait = false;
 			});
 			
 			$rootScope.$on('ws-discconnect', function(){
 				ws.$emit('client-disconnect', sessionID);
-				ws.$close();
 
                 connectionRequestWait = false;
+                webSocketConnected = false;
+                autoReconnect = false;
+
+                ws.$close();
 			});
-			
-			ws.$open();
+
+            $interval(function(){
+                if(!webSocketConnected && autoReconnect)
+                    ws.$open();
+            }, 5000);
+
         });
 		
         $rootScope.$watch('networkConnected', function(){
