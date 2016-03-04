@@ -273,7 +273,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 				webSocketConnected = true;
 
                 $interval(function(){
-                    if(autoReconnect && !clientConnected && !connectionRequestSended && !webSocketConnected){
+                    if(autoReconnect && webSocketConnected && !clientConnected && !connectionRequestSended){
                         console.log("Intentado conectarse al servidor");
 
                         connectToServer();
