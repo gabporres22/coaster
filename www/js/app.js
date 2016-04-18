@@ -58,7 +58,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
         };
 
         $rootScope.mostrarLogConsola = function(message){
-            console.log($filter('date')(new Date(),'yyyy-MM-dd HH:mm:ss.sss') + message);
+            console.log($filter('date')(new Date(),'dd/MM/yyyy HH:mm:ss.sss') + " - " + message);
         };
 
         // ********************************************************************************************************
