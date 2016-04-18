@@ -271,6 +271,8 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
             var clientConnected = false;
             var connectionRequestSended = false;
 
+            $rootScope.mostrarLogConsola("Inicializando conexion WebSocket");
+
             var ws = $websocket.$new({
                 url: 'ws://' + iTrackQHost + ':' + iTrackQPort + '/intellitrackq/clientWebSocket',
                 reconnect: false,
@@ -292,6 +294,8 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
             };
 
 			ws.$on('$open', function () {
+                $rootScope.mostrarLogConsola("WebSocket [open]");
+
 				webSocketConnected = true;
 
                 $interval(function(){
@@ -302,6 +306,10 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
                     }
                 }, 5000);
 
+            });
+
+            ws.$on('$error', function(error){
+                $rootScope.mostrarLogConsola("WebSocket Error [" + error + "]");
             });
 
             ws.$on('non-free-coasters-available', function(message){
@@ -327,7 +335,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
 			ws.$on('client-connect-ok', function (message) {
                 clientConnected = true;
 
-                $rootScope.mostrarLogConsola("Conectado con exito");
+                $rootScope.mostrarLogConsola("Conectado a servidor ITrackQ");
 
 				coasterID = message.coasterID;
 				sessionID = message.sessionID;
@@ -366,6 +374,8 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
 			});
 
 			ws.$on('$close', function () {
+                $rootScope.mostrarLogConsola("WebSocket [close]");
+
                 webSocketConnected = false;
                 clientConnected = false;
                 connectionRequestSended = false;
@@ -395,6 +405,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
 		
         $rootScope.$watch('networkConnected', function(){
             if($rootScope.networkConnected){
+                $rootScope.mostrarLogConsola("Conectado a la red !");
                 $rootScope.$broadcast('webSocketDataUpdated');
             }
         });
