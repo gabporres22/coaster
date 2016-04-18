@@ -362,6 +362,9 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
 
                     $timeout(function(){
 						ws.$emit('client-remove-request', sessionID);
+
+                        $rootScope.mostrarLogConsola("Finalizando WebSocket");
+
 						ws.$close();
 						
                         localStorage.setItem("coasterID", "");
@@ -396,6 +399,8 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
                 autoReconnect = false;
                 webSocketConnected = false;
                 connectionRequestWait = false;
+
+                $rootScope.mostrarLogConsola("Cerrando WebSocket");
 
                 ws.$close();
 			});
