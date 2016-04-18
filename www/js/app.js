@@ -53,7 +53,13 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 
         $rootScope.mostrarLogWiFi = function(data){
             $rootScope.message = data;
-        };   
+
+            $rootScope.mostrarLogConsola(data);
+        };
+
+        $rootScope.mostrarLogConsola = function(message){
+            console.log($filter('date')(new Date(),'yyyy-MM-dd HH:mm:ss.sss') + message);
+        };
 
         // ********************************************************************************************************
         // **************************** Helpers para la conectividad del dispositivo ******************************
@@ -70,12 +76,16 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
                     $rootScope.mostrarLogWiFi("Habilitando WiFi");
 
                     WifiWizard.setWifiEnabled(true, function(response){
+                        $rootScope.mostrarLogConsola("WiFi habilitada");
+
                         callbackStarting();
                     }, function(error){
                         callbackError('setWifiEnabled [' + error + ']');
+                        $rootScope.mostrarLogConsola("setWifiEnabled Error [" + error + "]");
                     });
                 }
             }, function(error){
+                $rootScope.mostrarLogConsola("isWifiEnabled Error[" + error + "]");
                 callbackError('isWifiEnabled [' + error + "]");
             });
         };
@@ -84,12 +94,15 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
             WifiWizard.getCurrentSSID(function(response) {
                 response = response.replace(/"/g, '');
 
+                $rootScope.mostrarLogConsola("getCurrentSSID [" + response + "]");
+
                 if (response == ssid) {
                     callbackConnected();
                 } else {
                     callbackNotConnected();
                 }
             }, function(error){
+                $rootScope.mostrarLogConsola("getCurrentSSID Error [" + error + "]");
                 callbackNotConnected();
             });
         };
@@ -109,6 +122,8 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
                             }
                         }
 
+                        $rootScope.mostrarLogConsola("SSID [" + ssid + "] " + ssidFound ? " Encontrado" : " No encontrado");
+
                         if(ssidFound) {
                             callbackFounded();
                         }else{
@@ -118,9 +133,11 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
                         callbackNotFounded();
                     }
                 }, function(error){
+                    $rootScope.mostrarLogConsola("getScanResults Error [" + error + "]");
                     callbackError('getScanResults [' + error + "]");
                 });
             }, function(error){
+                $rootScope.mostrarLogConsola("startScan Error [" + error + "]");
                 callbackError('startScan [' + error + "]");
             });
         };
@@ -154,6 +171,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
                             }, function(error){
                                 $rootScope.isConnecting = false;
 
+                                $rootScope.mostrarLogConsola("connectNetwork Error [" + error + "]");
                                 callbackError('connectNetwork [' + error + "]");
                             });
                         }
@@ -166,7 +184,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
                             // *** Red encontrada ***
                             $rootScope.mostrarLogWiFi("Configurando la red");
 
-                            console.log("SSID[" + networkSSID+ "] Password[" + networkPassword + "]");
+                            $rootScope.mostrarLogConsola("SSID[" + networkSSID+ "] Password[" + networkPassword + "]");
 
                             WifiWizard.addNetwork(WifiWizard.formatWPAConfig(ssid, password), function () {
                                 $rootScope.mostrarLogWiFi("Conectando a la red ...");
@@ -177,9 +195,11 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
                                 }, function (error) {
                                     $rootScope.isConnecting = false;
 
+                                    $rootScope.mostrarLogConsola("connectNetwork Error [" + error + "]");
                                     callbackError('connectNetwork [' + error + "]");
                                 });
                             }, function (error) {
+                                $rootScope.mostrarLogConsola("addNetwork Error [" + error + "]");
                                 callbackError('addNetwork [' + error + "]");
                             });
                         }, function () {
@@ -193,9 +213,11 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
                         });
                     }
                 }, function(error){
+                    $rootScope.mostrarLogConsola("listNetworks Error [" + error + "]");
                     callbackError('listNetworks [' + error + "]");
                 });
             }, function(error){
+                $rootScope.mostrarLogConsola("disconnect Error [" + error + "]");
                 callbackError('disconnect [' + error + "]");
             });
         };
@@ -274,7 +296,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 
                 $interval(function(){
                     if(autoReconnect && webSocketConnected && !clientConnected && !connectionRequestSended){
-                        console.log("Intentado conectarse al servidor");
+                        $rootScope.mostrarLogConsola("Intentado conectarse al servidor");
 
                         connectToServer();
                     }
@@ -285,7 +307,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
             ws.$on('non-free-coasters-available', function(message){
                 connectionRequestSended = false;
 
-                console.log("Error en la conexion [Sin coasters dispnibles]");
+                $rootScope.mostrarLogConsola("Error en la conexion [Sin coasters dispnibles]");
 
                 $state.go('inicio');
 
@@ -295,7 +317,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 			ws.$on('error-connection-request', function(message){
                 connectionRequestSended = false;
 
-                console.log("Error en la conexion [" + message + "]");
+                $rootScope.mostrarLogConsola("Error en la conexion [" + message + "]");
 
 				$state.go('inicio');
 
@@ -305,7 +327,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 			ws.$on('client-connect-ok', function (message) {
                 clientConnected = true;
 
-                console.log("Conectado con exito");
+                $rootScope.mostrarLogConsola("Conectado con exito");
 
 				coasterID = message.coasterID;
 				sessionID = message.sessionID;
@@ -319,7 +341,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
 			ws.$on('client-display-message', function (data) {
 				var obj = JSON.parse(data);
 
-				console.log("DisplayMessage [" + data + "]");
+				$rootScope.mostrarLogConsola("DisplayMessage [" + data + "]");
 
 				$rootScope.$broadcast('mensaje-recibido', obj);
 
@@ -348,7 +370,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
                 clientConnected = false;
                 connectionRequestSended = false;
 
-                console.log("WebSocket desconectado");
+                $rootScope.mostrarLogConsola("WebSocket desconectado");
 
                 if(autoReconnect){
                     $state.go('inicio');
