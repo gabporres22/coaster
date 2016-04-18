@@ -21,7 +21,7 @@ var sessionID = obtenerValorLocalStorage("sessionID") == null ? "" : obtenerValo
 
 var webSocketConnected = false;
 
-myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket) {
+myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter) {
     document.addEventListener("deviceready", function() {
         if (window.cordova && window.cordova.plugins.Keyboard)
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
