@@ -67,7 +67,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
             if(networkSSID == "" || networkPassword == "")
                 return;
 
-            $rootScope.mostrarLogWiFi("Validando conectividad ...");
+            $rootScope.mostrarLogWiFi("Validando conexión de red ...");
 
             WifiWizard.isWifiEnabled(function(enabled){
                 if(enabled){
@@ -101,7 +101,7 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
                 if (currentSSID == networkSSID) {
                     $rootScope.networkConnected = true;
 
-                    $rootScope.mostrarLogWiFi("Conectado con éxito.");
+                    $rootScope.mostrarLogWiFi("Conectado a la red con éxito.");
                 } else {
                     $rootScope.mostrarLogConsola("Conectado a la Red [" + currentSSID + "]");
 
@@ -113,8 +113,8 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
                         WifiWizard.addNetwork(WifiWizard.formatWPAConfig(networkSSID, networkPassword), function () {
 
                             WifiWizard.connectNetwork(networkSSID, function () {
-                                $rootScope.mostrarLogWiFi("Conectado con éxito.");
-                                
+                                $rootScope.mostrarLogWiFi("Conectado a la red con éxito.");
+
                                 $rootScope.networkConnected = true;
                             }, function (error) {
                                 $rootScope.mostrarLogConsola("connectNetwork ERROR [" + error + "]");
