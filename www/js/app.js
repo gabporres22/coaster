@@ -282,12 +282,16 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
             }
         });
 
-        /**
-         * Muestra el alerta para confirmar la salida de la app
+        /*
+         * Configuro el boton de Volver para salir de la app
          */
-        $rootScope.mostrarConfirmacionCierre = function(){
-            navigator.notification.confirm("Confirma salir de la aplicación y cancelar su turno ?", function(buttonIndex){
-                if(buttonIndex == 1){
+
+        document.addEventListener("backbutton", function() {
+            /**
+             * Muestra el alerta para confirmar la salida de la app
+             */
+            navigator.notification.confirm("Confirma salir de la aplicación y cancelar su turno ?", function (buttonIndex) {
+                if (buttonIndex == 1) {
                     $rootScope.$broadcast('webSocketDisconnect');
 
                     localStorage.setItem("coasterID", "");
@@ -296,14 +300,8 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
                     cordova.plugins.backgroundMode.disable();
                     navigator.app.exitApp();
                 }
-            }, "Cerrar aplicación", ['Aceptar', 'Cancelar']);
-        };
-
-        /*
-         * Configuro el boton de Volver para salir de la app
-         */
-
-        document.addEventListener("backbutton", $rootScope.mostrarConfirmacionCierre(), false);
+            }, "Cerrar aplicación", ['Aceptar', 'Cancelar'])
+        }, false);
 
         /*
          * Inicio la pantalla grafica y el modo de operacion continuo
