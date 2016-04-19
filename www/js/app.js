@@ -67,16 +67,17 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
             if(networkSSID == "" || networkPassword == "")
                 return;
 
-            if($rootScope.networkConnected){
-                return;
-            }
-
             $rootScope.mostrarLogWiFi("Validando conectividad ...");
 
             WifiWizard.isWifiEnabled(function(enabled){
                 if(enabled){
-                    $rootScope.mostrarLogWiFi("Conectando a la red ...");
+                    if($rootScope.networkConnected){
+                        $rootScope.mostrarLogWiFi("Conectado con éxito.");
+                        return;
+                    }
 
+                    $rootScope.mostrarLogWiFi("Conectando a la red ...");
+                    
                     $rootScope.conectarWifi();
                 }else{
                     $rootScope.networkConnected = false;
