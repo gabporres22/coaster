@@ -140,6 +140,10 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
             var clientConnected = false;
             var registerServerRequestSended = false;
 
+            if(!$rootScope.networkConnected){
+                return;
+            }
+
             $rootScope.mostrarLogConsola("Inicializando conexion WebSocket");
 
             var ws = $websocket.$new({
