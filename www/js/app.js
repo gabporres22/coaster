@@ -22,7 +22,6 @@ var sessionID = obtenerValorLocalStorage("sessionID") == null ? "" : obtenerValo
 var webSocketConnected = false;
 
 myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter) {
-    $rootScope.isConnecting = false;
     $rootScope.networkConnected = false;
 
     $rootScope.mostrarMensajeBarra = function(data){
@@ -68,11 +67,21 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
             if(networkSSID == "" || networkPassword == "")
                 return;
 
+            if($rootScope.networkConnected){
+                return;
+            }
+
+            $rootScope.mostrarLogWiFi("Validando conectividad ...");
+
             WifiWizard.isWifiEnabled(function(enabled){
                 if(enabled){
+                    $rootScope.mostrarLogWiFi("Conectando a la red ...");
+
                     $rootScope.conectarWifi();
                 }else{
-                    $rootScope.isConnecting = true;
+                    $rootScope.networkConnected = false;
+
+                    $rootScope.mostrarLogWiFi("Habilitando WiFi ...");
 
                     WifiWizard.setWifiEnabled(true, function(response){
                         if(response == "OK"){
@@ -95,18 +104,21 @@ myApp.run(function ($rootScope, $interval, $timeout, $state, $websocket, $filter
             WifiWizard.getCurrentSSID(function(currentSSID) {
                 currentSSID = currentSSID.replace(/"/g, '');
 
-                $rootScope.mostrarLogConsola("getCurrentSSID [" + currentSSID + "]");
-
                 if (currentSSID == networkSSID) {
-                    $rootScope.isConnecting = false;
                     $rootScope.networkConnected = true;
+
+                    $rootScope.mostrarLogWiFi("Conectado con éxito.");
                 } else {
+                    $rootScope.mostrarLogConsola("Conectado a la Red [" + currentSSID + "]");
+
+                    $rootScope.mostrarLogWiFi("Aguarde un momento por favor ...");
+
                     WifiWizard.disconnect(function(){
+                        $rootScope.networkConnected = false;
+
                         WifiWizard.addNetwork(WifiWizard.formatWPAConfig(networkSSID, networkPassword), function () {
-                            $rootScope.isConnecting = true;
 
                             WifiWizard.connectNetwork(networkSSID, function () {
-                                $rootScope.isConnecting = false;
                                 $rootScope.networkConnected = true;
                             }, function (error) {
                                 $rootScope.mostrarLogConsola("connectNetwork ERROR [" + error + "]");
